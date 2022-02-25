@@ -71,6 +71,7 @@ class AdNotificationTimingDataStore final : public DataStore {
   bool EnsureTable() override;
 
  private:
+  void AddTestLogs();
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

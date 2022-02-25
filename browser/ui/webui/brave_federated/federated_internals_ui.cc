@@ -13,6 +13,8 @@
 #include "base/callback_helpers.h"
 #include "base/values.h"
 #include "brave/browser/brave_federated/brave_federated_service_factory.h"
+#include "brave/browser/resources/federated_internals/grit/federated_internals_resources.h"
+#include "brave/browser/resources/federated_internals/grit/federated_internals_resources_map.h"
 #include "brave/browser/ui/webui/brave_federated/federated_internals_page_handler_impl.h"
 #include "brave/browser/ui/webui/brave_webui_source.h"
 #include "brave/common/webui_url_constants.h"
@@ -20,37 +22,33 @@
 #include "brave/components/brave_federated/data_store_service.h"
 #include "brave/components/brave_federated/data_stores/ad_notification_timing_data_store.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/grit/brave_components_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-
 FederatedInternalsUI::FederatedInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
   profile_ = Profile::FromWebUI(web_ui);
 
-  content::WebUIDataSource* html_source =
+  content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kFederatedInternalsHost);
 
-  html_source->AddString("userName", "Bob");
-  html_source->UseStringsJs();
-
-  html_source->AddResourcePath("federated_internals.css",
-                               IDR_FEDERATED_INTERNALS_CSS);
-//   html_source->AddResourcePath("federated_internals.js",
-//                                IDR_FEDERATED_INTERNALS_JS);
-  html_source->SetDefaultResource(IDR_FEDERATED_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(source,
+                              base::make_span(kFederatedInternalsResources,
+                                              kFederatedInternalsResourcesSize),
+                              IDR_FEDERATED_INTERNALS_FEDERATED_INTERNALS_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source);
+  content::WebUIDataSource::Add(browser_context, source);
 }
 
 FederatedInternalsUI::~FederatedInternalsUI() {}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(FederatedInternalsUI)
 
 void FederatedInternalsUI::BindInterface(
     mojo::PendingReceiver<federated_internals::mojom::PageHandlerFactory>
@@ -67,5 +65,3 @@ void FederatedInternalsUI::CreatePageHandler(
       std::make_unique<FederatedInternalsPageHandlerImpl>(
           std::move(receiver), std::move(page), profile_);
 }
-
-WEB_UI_CONTROLLER_TYPE_IMPL(FederatedInternalsUI)

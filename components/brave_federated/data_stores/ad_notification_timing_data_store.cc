@@ -73,8 +73,14 @@ bool AdNotificationTimingDataStore::Init(int task_id,
                                          const std::string& task_name,
                                          int max_number_of_records,
                                          int max_retention_days) {
-  return DataStore::Init(task_id, task_name, max_number_of_records,
-                         max_retention_days);
+  bool success = DataStore::Init(task_id, task_name, max_number_of_records,
+                                 max_retention_days);
+  if (!success) {
+    return false;
+  }
+
+  AddTestLogs();
+  return true;
 }
 
 bool AdNotificationTimingDataStore::AddLog(
@@ -138,6 +144,19 @@ bool AdNotificationTimingDataStore::EnsureTable() {
 
 void AdNotificationTimingDataStore::EnforceRetentionPolicy() {
   DataStore::EnforceRetentionPolicy();
+}
+
+void AdNotificationTimingDataStore::AddTestLogs() {
+  base::Time time = base::Time::Now();
+  std::string locale = "lo";
+  int number_of_tabs = 5;
+  bool label = true;
+
+  for (int i = 0; i < 5; i++) {
+    AdNotificationTimingTaskLog log(i, time, locale, number_of_tabs, label,
+                                    base::Time::Now());
+    AddLog(log);
+  }
 }
 
 }  // namespace brave_federated

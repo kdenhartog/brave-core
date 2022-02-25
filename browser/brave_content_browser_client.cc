@@ -505,9 +505,11 @@ void BraveContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     chrome::internal::RegisterWebUIControllerInterfaceBinder<
         brave_shields::mojom::PanelHandlerFactory, ShieldsPanelUI>(map);
   }
-  if (base::FeatureList::IsEnabled(brave_federated::features::kFederatedLearning)) {
-      chrome::internal::RegisterWebUIControllerInterfaceBinder<
-          federated_internals::mojom::PageHandlerFactory, FederatedInternalsUI>(map);
+  if (base::FeatureList::IsEnabled(
+          brave_federated::features::kFederatedLearning)) {
+    chrome::internal::RegisterWebUIControllerInterfaceBinder<
+        federated_internals::mojom::PageHandlerFactory, FederatedInternalsUI>(
+        map);
   }
 #endif
 #if BUILDFLAG(ENABLE_BRAVE_VPN) && !BUILDFLAG(IS_ANDROID)

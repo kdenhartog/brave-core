@@ -1,8 +1,8 @@
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './federated_internals.mojom-webui.js';
 
 export class FederatedInternalsBrowserProxy {
-  private handler: PageHandlerRemote;
-  private callbackRouter: PageCallbackRouter;
+  handler;
+  callbackRouter;
 
   constructor() {
     this.callbackRouter = new PageCallbackRouter();
@@ -17,13 +17,13 @@ export class FederatedInternalsBrowserProxy {
     return this.handler.getAdStoreInfo();
   }
 
-  static getInstance(): FederatedInternalsBrowserProxy {
+  static getInstance() {
     return instance || (instance = new FederatedInternalsBrowserProxy());
   }
 
-  getCallbackRouter(): PageCallbackRouter {
+  getCallbackRouter() {
     return this.callbackRouter;
   }
 }
 
-let instance: FederatedInternalsBrowserProxy|null = null;
+let instance = null;
