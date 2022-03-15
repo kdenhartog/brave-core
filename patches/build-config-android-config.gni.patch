@@ -10,3 +10,12 @@ index 5fa6099883e6bef12addf3e59295c1bc9088fa24..aec6759b835daa5eb422b55bcb137dae
  
  # NOTE: Because Chrome OS builds may depend on targets built with the Android
  # toolchain, this GNI file may be read and processed from within Chrome OS
+@@ -241,7 +242,7 @@ if (is_android || is_chromeos) {
+ 
+     # Controls whether proguard obfuscation is enabled for targets
+     # configured to use it.
+-    enable_proguard_obfuscation = true
++    enable_proguard_obfuscation = false
+ 
+     # Controls whether |short_resource_paths| and |strip_resource_names| are
+     # respected. Useful when trying to analyze APKs using tools that do not
