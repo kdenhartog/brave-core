@@ -5,14 +5,22 @@
 
 package org.chromium.chrome.browser.crypto_wallet.activities;
 
+import static org.chromium.chrome.browser.crypto_wallet.util.WalletConstants.ADD_NETWORK_FRAGMENT_ARG_ACTIVE_NETWORK;
+import static org.chromium.chrome.browser.crypto_wallet.util.WalletConstants.ADD_NETWORK_FRAGMENT_ARG_CHAIN_ID;
+
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.brave_wallet.mojom.CoinType;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.crypto_wallet.fragments.dapps.AddTokenFragment;
 import org.chromium.chrome.browser.crypto_wallet.fragments.dapps.SignMessageFragment;
+import org.chromium.chrome.browser.settings.BraveWalletAddNetworksFragment;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,17 +70,39 @@ public class BraveWalletDAppsActivity extends BraveWalletBaseActivity {
         if (mActivityType == ActivityType.SIGN_MESSAGE) {
             fragment = new SignMessageFragment();
         }
-        //         else if (mActivityType == ActivityType.ADD_ETHEREUM_CHAIN) {
-        //             fragment = new AddEthereumChainFragment();
-        //         } else if (mActivityType == ActivityType.SWITCH_ETHEREUM_CHAIN) {
+        // else if (mActivityType == ActivityType.SWITCH_ETHEREUM_CHAIN) {
         //             fragment = new SwitchEthereumChainFragment();
         //         }
         else if (mActivityType == ActivityType.ADD_TOKEN) {
             fragment = new AddTokenFragment();
         }
-        ft.replace(R.id.frame_layout, fragment);
-        ft.commit();
 
+        if (fragment != null) {
+            ft.replace(R.id.frame_layout, fragment);
+            ft.commit();
+        }
         onInitialLayoutInflationComplete();
+    }
+
+    @Override
+    public void finishNativeInitialization() {
+        super.finishNativeInitialization();
+        if (mActivityType == ActivityType.ADD_ETHEREUM_CHAIN) {
+            addEthereumChain();
+            finish();
+        }
+    }
+
+    private void addEthereumChain() {
+        assert mJsonRpcService != null;
+        mJsonRpcService.getChainId(CoinType.ETH, chainId -> {
+            Bundle fragmentArgs = new Bundle();
+            fragmentArgs.putString(ADD_NETWORK_FRAGMENT_ARG_CHAIN_ID, "");
+            fragmentArgs.putBoolean(ADD_NETWORK_FRAGMENT_ARG_ACTIVE_NETWORK, false);
+            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+
+            settingsLauncher.launchSettingsActivity(
+                    this, BraveWalletAddNetworksFragment.class, fragmentArgs);
+        });
     }
 }
