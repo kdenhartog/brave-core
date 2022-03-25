@@ -195,7 +195,7 @@ fn initialize_sdk(ctx: UniquePtr<ffi::SkusContext>, env: String) -> Box<CppSDK> 
     tracing_subscriber::fmt()
         .event_format(log::CppFormatter::new())
         .with_max_level(tracing::Level::TRACE)
-        .init();
+        .try_init();
 
     let env = env
         .parse::<skus::Environment>()

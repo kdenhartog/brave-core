@@ -314,9 +314,7 @@ TEST(BraveVPNFeatureTest, FeatureTest) {
   EXPECT_FALSE(brave_vpn::IsBraveVPNEnabled());
 }
 
-// TODO(bsclifton): re-enable test after figuring out why crash is happening.
-// Run each test separately works well but crashed when run them all.
-TEST_F(BraveVPNServiceTest, DISABLED_RegionDataTest) {
+TEST_F(BraveVPNServiceTest, RegionDataTest) {
   // Test invalid region data.
   OnFetchRegionList(false, std::string(), true);
   EXPECT_TRUE(regions().empty());
@@ -345,7 +343,7 @@ TEST_F(BraveVPNServiceTest, DISABLED_RegionDataTest) {
   EXPECT_EQ(regions()[0], device_region());
 }
 
-TEST_F(BraveVPNServiceTest, DISABLED_HostnamesTest) {
+TEST_F(BraveVPNServiceTest, HostnamesTest) {
   // Set valid hostnames list
   hostname().reset();
   OnFetchHostnames("region-a", GetHostnamesData(), true);
@@ -406,7 +404,7 @@ TEST_F(BraveVPNServiceTest, LoadPurchasedStateTest) {
   EXPECT_EQ(PurchasedState::PURCHASED, purchased_state());
 }
 
-TEST_F(BraveVPNServiceTest, DISABLED_CancelConnectingTest) {
+TEST_F(BraveVPNServiceTest, CancelConnectingTest) {
   cancel_connecting() = true;
   connection_state() = ConnectionState::CONNECTING;
   OnCreated();
@@ -453,7 +451,7 @@ TEST_F(BraveVPNServiceTest, DISABLED_CancelConnectingTest) {
   EXPECT_EQ(ConnectionState::DISCONNECTED, connection_state());
 }
 
-TEST_F(BraveVPNServiceTest, DISABLED_ConnectionInfoTest) {
+TEST_F(BraveVPNServiceTest, ConnectionInfoTest) {
   // Having skus_credential is pre-requisite before try connecting.
   skus_credential() = "test_credentials";
   // Check valid connection info is set when valid hostname and profile
@@ -474,7 +472,7 @@ TEST_F(BraveVPNServiceTest, DISABLED_ConnectionInfoTest) {
   EXPECT_FALSE(GetConnectionInfo().IsValid());
 }
 
-TEST_F(BraveVPNServiceTest, DISABLED_NeedsConnectTest) {
+TEST_F(BraveVPNServiceTest, NeedsConnectTest) {
   // Check ignore Connect() request while connecting or disconnecting is
   // in-progress.
   connection_state() = ConnectionState::CONNECTING;
@@ -495,7 +493,7 @@ TEST_F(BraveVPNServiceTest, DISABLED_NeedsConnectTest) {
   EXPECT_EQ(ConnectionState::CONNECTING, connection_state());
 }
 
-TEST_F(BraveVPNServiceTest, DISABLED_LoadRegionDataFromPrefsTest) {
+TEST_F(BraveVPNServiceTest, LoadRegionDataFromPrefsTest) {
   // Initially, prefs doesn't have region data.
   EXPECT_EQ(brave_vpn::mojom::Region(), device_region());
   EXPECT_TRUE(regions().empty());
