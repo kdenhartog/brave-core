@@ -754,9 +754,10 @@ enum TransactionType {
   ERC721TransferFrom = 3,
   ERC721SafeTransferFrom = 4,
   Other = 5,
-  SolanaSystemTransfer = 6,  // transfering SOL
+  SolanaSystemTransfer = 6,  // transferring SOL
   SolanaSPLTokenTransfer = 7,
-  SolanaSPLTokenTransferWithAssociatedTokenAccountCreation = 8
+  SolanaSPLTokenTransferWithAssociatedTokenAccountCreation = 8,
+  ETHSwap = 9
 };
 
 // TODO(spylogsster): Fill the struct with needed fields.
