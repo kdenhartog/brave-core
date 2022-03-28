@@ -162,8 +162,15 @@ function ContactSupport (props: Props) {
           />
           <S.OptionalValues>
             <S.SectionDescription>
-              Please select the information you're comfortable sharing with us
+              Select the info you're willing to share with us
             </S.SectionDescription>
+            <S.Notes>
+              <p>
+                The more info you share, the easier it will be for support staff to help.
+                { ' ' }
+                <a href="#" onClick={handlePrivacyPolicyClick}>Privacy Policy.</a>
+              </p>
+            </S.Notes>
             <S.OptionalValueLabel>
               <div className={'optionalValueTitle'}>
                 <span className={'optionalValueTitleKey'}>VPN hostname:</span> {supportData?.hostname}
@@ -197,12 +204,7 @@ function ContactSupport (props: Props) {
           </S.OptionalValues>
           <S.Notes>
             <p>
-              The more information you share with us the easier it will be for the support staff to help you resolve your issue.
-              { ' ' }
-              <a href="#" onClick={handlePrivacyPolicyClick}>Please see our privacy policy for more information.</a>
-            </p>
-            <p>
-              Support provided with the help of the Guardian team.
+              Support provided in partnership with Guardian.
             </p>
           </S.Notes>
           <Button
