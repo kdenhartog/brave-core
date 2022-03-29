@@ -18,6 +18,8 @@
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/document_metadata/document_metadata.mojom.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -63,6 +65,8 @@ class AdsTabHelper : public content::WebContentsObserver,
 
   void OnJavaScriptTextResult(base::Value value);
 
+  void OnGetDocumentMetadataEntities(blink::mojom::WebPagePtr web_page);
+
   // content::WebContentsObserver overrides
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -90,6 +94,8 @@ class AdsTabHelper : public content::WebContentsObserver,
   bool is_browser_active_ = true;
   std::vector<GURL> redirect_chain_;
   bool should_process_ = false;
+
+  mojo::Remote<blink::mojom::DocumentMetadata> document_metadata_;
 
   base::WeakPtrFactory<AdsTabHelper> weak_factory_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();

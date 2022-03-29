@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/fixed_flat_set.h"
 #include "brave/browser/brave_ads/ads_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -24,6 +26,31 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
+
+namespace {
+
+constexpr char kSearchAdLinkDataType[] = "Product";
+
+constexpr char kContextPropertyName[] = "@context";
+
+constexpr auto kVettedBraveSearchHosts =
+    base::MakeFixedFlatSet<base::StringPiece>(
+        {"search.brave.com", "search-dev.brave.com",
+         "search-dev-local.brave.com", "search.brave.software",
+         "search.bravesoftware.com"});
+
+constexpr auto kSearchAdAttributes = base::MakeFixedFlatSet<base::StringPiece>(
+    {"uuid", "creativeInstanceId", "creativeSetId"});
+
+bool IsAllowedBraveSearchHost(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+  const std::string host = url.host();
+  return base::Contains(kVettedBraveSearchHosts, host);
+}
+
+}  // namespace
 
 namespace brave_ads {
 
@@ -151,7 +178,65 @@ void AdsTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
     return;
   }
 
+  if (IsAllowedBraveSearchHost(validated_url)) {
+    DCHECK(!document_metadata_.is_bound());
+    render_frame_host->GetRemoteInterfaces()->GetInterface(
+        document_metadata_.BindNewPipeAndPassReceiver());
+    document_metadata_->GetEntities(
+        base::BindOnce(&AdsTabHelper::OnGetDocumentMetadataEntities,
+                       weak_factory_.GetWeakPtr()));
+  }
+
   TabUpdated();
+}
+
+void AdsTabHelper::OnGetDocumentMetadataEntities(
+    blink::mojom::WebPagePtr web_page) {
+  document_metadata_.reset();
+
+  if (!web_page) {
+    return;
+  }
+
+  base::Value search_ad(base::Value::Type::DICTIONARY);
+  base::flat_set<std::string> found_attributes;
+
+  for (const auto& entity : web_page->entities) {
+    if (entity->type != kSearchAdLinkDataType) {
+      continue;
+    }
+
+    for (const auto& property : entity->properties) {
+      if (property->name == kContextPropertyName) {
+        continue;
+      }
+
+      // Wrong attribute name
+      if (!base::Contains(kSearchAdAttributes, property->name)) {
+        return;
+      }
+
+      // Wrong attribute type
+      if (!property->values->is_string_values() ||
+          property->values->get_string_values().size() != 1) {
+        return;
+      }
+
+      found_attributes.insert(property->name);
+      search_ad.SetStringKey(property->name,
+                             property->values->get_string_values().front());
+    }
+
+    // Not all of attributes were specified.
+    if (found_attributes.size() != kSearchAdAttributes.size()) {
+      return;
+    }
+
+    break;
+  }
+
+  // TODO(https://github.com/brave/brave-browser/issues/20852):
+  // Send search ad attributes to Ads Service.
 }
 
 void AdsTabHelper::MediaStartedPlaying(const MediaPlayerInfo& video_type,
