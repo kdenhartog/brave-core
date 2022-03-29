@@ -142,10 +142,10 @@ static_library("browser") {
   ]
 }
 
-static_library("ethereum_permission_utils") {
+static_library("permission_utils") {
   sources = [
-    "ethereum_permission_utils.cc",
-    "ethereum_permission_utils.h",
+    "permission_utils.cc",
+    "permission_utils.h",
   ]
 
   deps = [
