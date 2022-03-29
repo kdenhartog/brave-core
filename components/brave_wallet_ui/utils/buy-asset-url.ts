@@ -1,15 +1,40 @@
 import {
-  BraveWallet,
+  BraveWallet, BuyServiceId,
   UserAccountType
 } from '../constants/types'
 
 import { getBuyAssetUrl } from '../common/async/lib'
 
-export function GetBuyOrFaucetUrl (networkChainId: string, asset: BraveWallet.BlockchainToken, account: UserAccountType, buyAmount: string): Promise<string> {
+export function GetBuyOrFaucetUrl (selectedBuyOption: BuyServiceId, networkChainId: string, asset: BraveWallet.BlockchainToken, account: UserAccountType, buyAmount: string, currency: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     switch (networkChainId) {
       case BraveWallet.MAINNET_CHAIN_ID:
-        getBuyAssetUrl(account.address, asset.symbol, buyAmount)
+        getBuyAssetUrl(selectedBuyOption, BraveWallet.MAINNET_CHAIN_ID, account.address, asset.symbol, buyAmount, currency)
+          .then(resolve)
+          .catch(reject)
+        break
+      case BraveWallet.POLYGON_MAINNET_CHAIN_ID:
+        getBuyAssetUrl(selectedBuyOption, BraveWallet.POLYGON_MAINNET_CHAIN_ID, account.address, asset.symbol, buyAmount, currency)
+          .then(resolve)
+          .catch(reject)
+        break
+      case BraveWallet.BINANCE_SMART_CHAIN_MAINNET_CHAIN_ID:
+        getBuyAssetUrl(selectedBuyOption, BraveWallet.BINANCE_SMART_CHAIN_MAINNET_CHAIN_ID, account.address, asset.symbol, buyAmount, currency)
+          .then(resolve)
+          .catch(reject)
+        break
+      case BraveWallet.AVALANCHE_MAINNET_CHAIN_ID:
+        getBuyAssetUrl(selectedBuyOption, BraveWallet.AVALANCHE_MAINNET_CHAIN_ID, account.address, asset.symbol, buyAmount, currency)
+          .then(resolve)
+          .catch(reject)
+        break
+      case BraveWallet.CELO_MAINNET_CHAIN_ID:
+        getBuyAssetUrl(selectedBuyOption, BraveWallet.CELO_MAINNET_CHAIN_ID, account.address, asset.symbol, buyAmount, currency)
+          .then(resolve)
+          .catch(reject)
+        break
+      case BraveWallet.SOLANA_MAINNET:
+        getBuyAssetUrl(selectedBuyOption, BraveWallet.SOLANA_MAINNET, account.address, asset.symbol, buyAmount, currency)
           .then(resolve)
           .catch(reject)
         break

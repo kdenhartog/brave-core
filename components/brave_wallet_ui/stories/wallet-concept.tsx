@@ -18,7 +18,7 @@ import {
   AccountTransactions,
   BuySendSwapTypes,
   WalletAccountType,
-  ImportWalletError
+  ImportWalletError, BuyServiceId
 } from '../constants/types'
 import Onboarding from './screens/onboarding'
 import BackupWallet from './screens/backup-wallet'
@@ -320,6 +320,7 @@ export const _DesktopWalletConcept = (args: { onboarding: boolean, locked: boole
   const [selectedWidgetTab, setSelectedWidgetTab] = React.useState<BuySendSwapTypes>('buy')
   const [showVisibleAssetsModal, setShowVisibleAssetsModal] = React.useState<boolean>(false)
   const [foundTokenInfo, setFoundTokenInfo] = React.useState<BraveWallet.BlockchainToken | undefined>()
+  const [selectedBuyOption, setSelectedBuyOption] = React.useState<BuyServiceId>('ramp')
 
   const onToggleRestore = () => {
     setIsRestoring(!isRestoring)
@@ -827,12 +828,16 @@ export const _DesktopWalletConcept = (args: { onboarding: boolean, locked: boole
                 onSelectPresetSendAmount={onSelectPresetSendAmount}
                 onSelectTab={setSelectedWidgetTab}
                 buyAssetOptions={AccountAssetOptions}
+                wyreAssetOptions={AccountAssetOptions}
+                rampAssetOptions={AccountAssetOptions}
                 sendAssetOptions={AccountAssetOptions}
                 networkList={mockNetworks}
                 onSelectSendAsset={onSelectTransactAsset}
                 onAddNetwork={onAddNetwork}
                 onAddAsset={onShowVisibleAssetsModal}
                 sendAmountValidationError={undefined}
+                selectedBuyOption={selectedBuyOption}
+                onSelectBuyOption={setSelectedBuyOption}
               />
               <SweepstakesBanner />
             </WalletWidgetStandIn>

@@ -489,6 +489,7 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
   const [fromAmount, setFromAmount] = React.useState('')
   const [buyAmount, setBuyAmount] = React.useState('')
   const [selectedTransaction, setSelectedTransaction] = React.useState<BraveWallet.TransactionInfo | undefined>(transactionList[1][0])
+  const [selectedBuyOption, setSelectedBuyOption] = React.useState('ramp')
 
   const onSetBuyAmount = (value: string) => {
     setBuyAmount(value)
@@ -775,6 +776,10 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
                         buyAmount={buyAmount}
                         selectedNetwork={selectedNetwork}
                         networkList={[]}
+                        selectedBuyOption={selectedBuyOption}
+                        onSelectBuyOption={setSelectedBuyOption}
+                        isAvailableOnRamp={true}
+                        isAvailableOnWyre={true}
                       />
                     }
                     {selectedPanel === 'sitePermissions' &&

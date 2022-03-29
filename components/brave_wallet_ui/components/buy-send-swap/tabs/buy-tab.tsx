@@ -3,13 +3,16 @@ import {
   UserAccountType,
   BuySendSwapViewTypes,
   BraveWallet,
-  DefaultCurrencies
+  DefaultCurrencies, BuyServiceId
 } from '../../../constants/types'
+
 import {
   AccountsAssetsNetworks,
   Header,
   Buy
 } from '..'
+
+import { getUniqueAssets, isSelectedAssetInAssetOptions } from '../../../utils/asset-utils'
 
 export interface Props {
   networkList: BraveWallet.NetworkInfo[]
@@ -24,6 +27,10 @@ export interface Props {
   onSetBuyAmount: (value: string) => void
   onAddNetwork: () => void
   onAddAsset: () => void
+  selectedBuyOption: BuyServiceId
+  onSelectBuyOption: (optionId: BuyServiceId) => void
+  wyreAssetOptions: BraveWallet.BlockchainToken[]
+  rampAssetOptions: BraveWallet.BlockchainToken[]
 }
 
 function BuyTab (props: Props) {
@@ -39,7 +46,11 @@ function BuyTab (props: Props) {
     onSelectNetwork,
     onSelectAccount,
     onSetBuyAmount,
-    onAddNetwork
+    onAddNetwork,
+    selectedBuyOption,
+    onSelectBuyOption,
+    wyreAssetOptions,
+    rampAssetOptions
   } = props
   const [buyView, setBuyView] = React.useState<BuySendSwapViewTypes>('buy')
   const [selectedAsset, setSelectedAsset] = React.useState<BraveWallet.BlockchainToken>(assetOptions[0])
@@ -75,6 +86,24 @@ function BuyTab (props: Props) {
     setBuyView('buy')
   }
 
+  React.useEffect(() => {
+    if (assetOptions.length > 0) {
+      setSelectedAsset(assetOptions[0])
+    }
+  }, [assetOptions])
+
+  const filteredAssetOptions = React.useMemo(() => {
+    return getUniqueAssets(assetOptions)
+  }, [assetOptions])
+
+  const isAvailableOnWyre = React.useMemo(() => {
+    return isSelectedAssetInAssetOptions(selectedAsset, wyreAssetOptions)
+  }, [selectedAsset])
+
+  const isAvailableOnRamp = React.useMemo(() => {
+    return isSelectedAssetInAssetOptions(selectedAsset, rampAssetOptions)
+  }, [selectedAsset])
+
   return (
     <>
       {buyView === 'buy' &&
@@ -93,13 +122,17 @@ function BuyTab (props: Props) {
             onInputChange={onInputChange}
             onSubmit={onSubmitBuy}
             networkList={networkList}
+            isAvailableOnWyre={isAvailableOnWyre}
+            isAvailableOnRamp={isAvailableOnRamp}
+            selectedBuyOption={selectedBuyOption}
+            onSelectBuyOption={onSelectBuyOption}
           />
         </>
       }
       {buyView !== 'buy' &&
         <AccountsAssetsNetworks
           goBack={goBack}
-          assetOptions={assetOptions}
+          assetOptions={filteredAssetOptions}
           onClickSelectAccount={onClickSelectAccount}
           onClickSelectNetwork={onClickSelectNetwork}
           onSelectedAsset={onSelectedAsset}

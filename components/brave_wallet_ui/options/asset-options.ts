@@ -12,7 +12,8 @@ import {
   ETHIconUrl,
   ZRXIconUrl,
   SOLIconUrl,
-  FILECOINIconUrl
+  FILECOINIconUrl,
+  FEVRIconUrl
 } from '../assets/asset-icons'
 import {
   CeloIcon,
@@ -258,3 +259,217 @@ export const AccountAssetOptions: BraveWallet.BlockchainToken[] = [
     chainId: '0x1'
   }
 ]
+
+// Ramp Buy Asset Options
+export const RampBuyAssetOptions: BraveWallet.BlockchainToken[] = [
+  {
+    contractAddress: '',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    logo: `chrome://wallet/${ETHIconUrl}`,
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '',
+    name: 'Avalanche',
+    symbol: 'AVAX',
+    logo: 'chrome://erc-token-images/avax.png',
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.AVALANCHE_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0x82030cdbd9e4b7c5bb0b811a61da6360d69449cc',
+    name: 'RealFevr',
+    symbol: 'BSC_FEVR',
+    logo: `chrome://wallet/${FEVRIconUrl}`,
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.BINANCE_SMART_CHAIN_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '',
+    name: 'CELO',
+    symbol: 'CELO',
+    logo: 'chrome://erc-token-images/celo.png',
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.CELO_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73',
+    name: 'Celo Euro',
+    symbol: 'CEUR',
+    logo: 'chrome://erc-token-images/ceur.png',
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.CELO_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
+    name: 'Celo Dollar',
+    symbol: 'CUSD',
+    logo: 'chrome://erc-token-images/cusd.png',
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.CELO_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    name: 'DAI',
+    symbol: 'DAI',
+    logo: 'chrome://erc-token-images/dai.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '',
+    name: 'Polygon',
+    symbol: 'MATIC',
+    logo: 'chrome://erc-token-images/matic.png',
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.POLYGON_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+    name: 'DAI',
+    symbol: 'MATIC_DAI',
+    logo: 'chrome://erc-token-images/dai.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.POLYGON_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+    name: 'ETH',
+    symbol: 'MATIC_ETH',
+    logo: 'chrome://erc-token-images/eth.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.POLYGON_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0xbbba073c31bf03b8acf7c28ef0738decf3695683',
+    name: 'Sandbox',
+    symbol: 'MATIC_SAND',
+    logo: 'chrome://erc-token-images/sand.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.POLYGON_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    name: 'USDC',
+    symbol: 'MATIC_USDC',
+    logo: 'chrome://erc-token-images/usdc.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.POLYGON_MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '',
+    name: 'Solana',
+    symbol: 'SOLANA_SOL',
+    logo: `chrome://wallet/${SOLIconUrl}`,
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.SOLANA_MAINNET
+  },
+  {
+    contractAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    name: 'Tether',
+    symbol: 'SOLANA_USDT',
+    logo: 'chrome://erc-token-images/usdt.png',
+    isErc20: false,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.SOLANA_MAINNET
+  },
+  {
+    contractAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    name: 'Tether',
+    symbol: 'USDT',
+    logo: 'chrome://erc-token-images/usdt.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.MAINNET_CHAIN_ID
+  },
+  {
+    contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    name: 'USDC',
+    symbol: 'USDC',
+    logo: 'chrome://erc-token-images/usdc.png',
+    isErc20: true,
+    isErc721: false,
+    decimals: 18,
+    visible: true,
+    tokenId: '',
+    coingeckoId: '',
+    chainId: BraveWallet.MAINNET_CHAIN_ID
+  }
+]
+
+export const RampSupportedCurrencies = ['USD', 'EUR', 'GBP']

@@ -6,7 +6,7 @@ import {
   BraveWallet,
   BuySupportedChains,
   DefaultCurrencies,
-  AmountValidationErrorType
+  AmountValidationErrorType, BuyServiceId
 } from '../../constants/types'
 import Swap from '../../components/buy-send-swap/tabs/swap-tab'
 import Send from '../../components/buy-send-swap/tabs/send-tab'
@@ -44,6 +44,10 @@ export interface Props {
   onSelectSendAsset: (asset: BraveWallet.BlockchainToken, toOrFrom: ToOrFromType) => void
   onAddNetwork: () => void
   onAddAsset: (value: boolean) => void
+  selectedBuyOption: BuyServiceId
+  onSelectBuyOption: (optionId: BuyServiceId) => void
+  wyreAssetOptions: BraveWallet.BlockchainToken[]
+  rampAssetOptions: BraveWallet.BlockchainToken[]
 }
 
 function BuySendSwap (props: Props) {
@@ -74,7 +78,11 @@ function BuySendSwap (props: Props) {
     onSelectTab,
     onSelectSendAsset,
     onAddNetwork,
-    onAddAsset
+    onAddAsset,
+    selectedBuyOption,
+    onSelectBuyOption,
+    rampAssetOptions,
+    wyreAssetOptions
   } = props
 
   const { isSwapSupported } = useSwap({})
@@ -157,6 +165,10 @@ function BuySendSwap (props: Props) {
           assetOptions={buyAssetOptions}
           onAddNetwork={onAddNetwork}
           onAddAsset={onClickAddAsset}
+          wyreAssetOptions={wyreAssetOptions}
+          rampAssetOptions={rampAssetOptions}
+          selectedBuyOption={selectedBuyOption}
+          onSelectBuyOption={onSelectBuyOption}
         />
       }
     </Layout>

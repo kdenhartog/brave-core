@@ -17,7 +17,8 @@ import {
   SupportedCoinTypes,
   SupportedTestNetworks,
   SendEthTransactionParams,
-  SendFilTransactionParams
+  SendFilTransactionParams,
+  BuyServiceId
 } from '../../constants/types'
 import * as WalletActions from '../actions/wallet_actions'
 
@@ -33,6 +34,7 @@ import { GetAccountsHardwareOperationResult } from '../hardware/types'
 import LedgerBridgeKeyring from '../hardware/ledgerjs/eth_ledger_bridge_keyring'
 import TrezorBridgeKeyring from '../hardware/trezor/trezor_bridge_keyring'
 import FilecoinLedgerKeyring from '../hardware/ledgerjs/filecoin_ledger_keyring'
+import { RampSupportedCurrencies } from '../../options/asset-options'
 import { AllNetworksOption } from '../../options/network-filter-options'
 
 export const getERC20Allowance = (
@@ -133,9 +135,25 @@ export async function findHardwareAccountInfo (address: string): Promise<Account
   return false
 }
 
-export async function getBuyAssetUrl (address: string, symbol: string, amount: string) {
-  const { blockchainRegistry } = getAPIProxy()
-  return (await blockchainRegistry.getBuyUrl(BraveWallet.MAINNET_CHAIN_ID, address, symbol, amount)).url
+export async function getBuyAssetUrl (buyServiceOption: BuyServiceId, networkChainId: string, address: string, symbol: string, amount: string, currency: string) {
+  if (buyServiceOption === 'wyre') {
+    const { blockchainRegistry } = getAPIProxy()
+    return (await blockchainRegistry.getBuyUrl(networkChainId, address, symbol, amount)).url
+  }
+
+  if (buyServiceOption === 'ramp') {
+    let defaultCurrency = currency
+    if (!RampSupportedCurrencies.includes(defaultCurrency)) {
+      defaultCurrency = RampSupportedCurrencies[0]
+    }
+    // This should ideally be moved to the backend as above
+    const baseUrl = 'https://buy.ramp.network'
+    const params = `userAddress=${encodeURIComponent(address)}&swapAsset=${encodeURIComponent(symbol)}&fiatCurrency=${encodeURIComponent(defaultCurrency)}&fiatValue=${encodeURIComponent(amount)}`
+
+    return `${baseUrl}?${params}`
+  }
+
+  return ''
 }
 
 export async function getBuyAssets () {

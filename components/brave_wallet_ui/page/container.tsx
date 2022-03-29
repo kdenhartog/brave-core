@@ -28,7 +28,7 @@ import {
   WalletPageState,
   WalletRoutes,
   WalletState,
-  SupportedTestNetworks
+  SupportedTestNetworks, BuyServiceId
 } from '../constants/types'
 // import { NavOptions } from '../options/side-nav-options'
 import BuySendSwap from '../stories/screens/buy-send-swap'
@@ -101,6 +101,8 @@ function Container (props: Props) {
     selectedNetworkFilter
   } = props.wallet
 
+  console.log(defaultCurrencies)
+
   // Page Props
   const {
     invalidMnemonic,
@@ -126,10 +128,13 @@ function Container (props: Props) {
   const [selectedWidgetTab, setSelectedWidgetTab] = React.useState<BuySendSwapTypes>('buy')
   const [showVisibleAssetsModal, setShowVisibleAssetsModal] = React.useState<boolean>(false)
   const [sessionRoute, setSessionRoute] = React.useState<string | undefined>(undefined)
+  const [selectedBuyOption, setSelectedBuyOption] = React.useState<BuyServiceId>('ramp')
 
   const {
     sendAssetOptions,
-    buyAssetOptions
+    buyAssetOptions,
+    wyreAssetOptions,
+    rampAssetOptions
   } = useAssets(
     selectedAccount,
     networkList,
@@ -375,7 +380,7 @@ function Container (props: Props) {
   }
 
   const onSubmitBuy = (asset: BraveWallet.BlockchainToken) => {
-    GetBuyOrFaucetUrl(selectedNetwork.chainId, asset, selectedAccount, buyAmount)
+    GetBuyOrFaucetUrl(selectedBuyOption, selectedNetwork.chainId, asset, selectedAccount, buyAmount, defaultCurrencies.fiat)
       .then(url => window.open(url, '_blank'))
       .catch(e => console.error(e))
   }
@@ -698,6 +703,10 @@ function Container (props: Props) {
             onSelectSendAsset={onSelectSendAsset}
             onAddNetwork={onAddNetwork}
             onAddAsset={onShowVisibleAssetsModal}
+            selectedBuyOption={selectedBuyOption}
+            onSelectBuyOption={setSelectedBuyOption}
+            wyreAssetOptions={wyreAssetOptions}
+            rampAssetOptions={rampAssetOptions}
           />
           <SweepstakesBanner />
         </WalletWidgetStandIn>

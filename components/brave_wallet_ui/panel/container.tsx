@@ -57,7 +57,7 @@ import {
   WalletAccountType,
   BuySendSwapViewTypes,
   ToOrFromType,
-  WalletOrigin
+  WalletOrigin, BuyServiceId
 } from '../constants/types'
 import { AppsList } from '../options/apps-list-options'
 import LockPanel from '../components/extension/lock-panel'
@@ -71,6 +71,7 @@ import {
 } from '../common/async/lib'
 import { isHardwareAccount } from '../utils/address-utils'
 import { useAssets, useBalance, useSwap, useSend, usePreset } from '../common/hooks'
+import { getUniqueAssets, isSelectedAssetInAssetOptions } from '../utils/asset-utils'
 
 type Props = {
   panel: PanelState
@@ -135,10 +136,13 @@ function Container (props: Props) {
   const [selectedTransaction, setSelectedTransaction] = React.useState<BraveWallet.TransactionInfo | undefined>()
   const [showSelectAsset, setShowSelectAsset] = React.useState<boolean>(false)
   const [buyAmount, setBuyAmount] = React.useState('')
+  const [selectedBuyOption, setSelectedBuyOption] = React.useState<BuyServiceId>('ramp')
 
   const {
     sendAssetOptions,
     buyAssetOptions,
+    wyreAssetOptions,
+    rampAssetOptions,
     panelUserAssetList
   } = useAssets(
     selectedAccount,
@@ -148,7 +152,7 @@ function Container (props: Props) {
     transactionSpotPrices
   )
 
-  const [selectedWyreAsset, setSelectedWyreAsset] = React.useState<BraveWallet.BlockchainToken>(buyAssetOptions[0])
+  const [selectedBuyAsset, setSelectedBuyAsset] = React.useState<BraveWallet.BlockchainToken>(buyAssetOptions[0])
 
   const swap = useSwap()
   const {
@@ -211,7 +215,7 @@ function Container (props: Props) {
   }
 
   const onSubmitBuy = () => {
-    GetBuyOrFaucetUrl(selectedNetwork.chainId, selectedWyreAsset, selectedAccount, buyAmount)
+    GetBuyOrFaucetUrl(selectedBuyOption, selectedNetwork.chainId, selectedBuyAsset, selectedAccount, buyAmount, defaultCurrencies.fiat)
       .then(url => {
         chrome.tabs.create({ url }, () => {
           if (chrome.runtime.lastError) {
@@ -244,7 +248,7 @@ function Container (props: Props) {
 
   const onSelectAsset = (asset: BraveWallet.BlockchainToken) => () => {
     if (selectedPanel === 'buy') {
-      setSelectedWyreAsset(asset)
+      setSelectedBuyAsset(asset)
     } else if (selectedPanel === 'swap') {
       onSelectTransactAsset(asset, swapToOrFrom)
     } else {
@@ -542,6 +546,24 @@ function Container (props: Props) {
     // Logic here to cancel allow reading encrypted message
   }
 
+  React.useEffect(() => {
+    if (buyAssetOptions.length > 0) {
+      setSelectedBuyAsset(buyAssetOptions[0])
+    }
+  }, [buyAssetOptions])
+
+  const filteredAssetOptions = React.useMemo(() => {
+    return getUniqueAssets(buyAssetOptions)
+  }, [buyAssetOptions])
+
+  const isAvailableOnWyre = React.useMemo(() => {
+    return isSelectedAssetInAssetOptions(selectedBuyAsset, wyreAssetOptions)
+  }, [selectedBuyAsset])
+
+  const isAvailableOnRamp = React.useMemo(() => {
+    return isSelectedAssetInAssetOptions(selectedBuyAsset, rampAssetOptions)
+  }, [selectedBuyAsset])
+
   const isConnectedToSite = React.useMemo((): boolean => {
     if (activeOrigin === WalletOrigin) {
       return true
@@ -733,7 +755,7 @@ function Container (props: Props) {
   if (showSelectAsset) {
     let assets: BraveWallet.BlockchainToken[]
     if (selectedPanel === 'buy') {
-      assets = buyAssetOptions
+      assets = filteredAssetOptions
     } else if (selectedPanel === 'send') {
       assets = sendAssetOptions
     } else { // swap
@@ -882,10 +904,14 @@ function Container (props: Props) {
                 onChangeBuyView={onChangeSendView}
                 onInputChange={onSetBuyAmount}
                 onSubmit={onSubmitBuy}
-                selectedAsset={selectedWyreAsset}
+                selectedAsset={selectedBuyAsset}
                 buyAmount={buyAmount}
                 selectedNetwork={getNetworkInfo(selectedNetwork.chainId, networkList)}
                 networkList={networkList}
+                isAvailableOnRamp={isAvailableOnRamp}
+                isAvailableOnWyre={isAvailableOnWyre}
+                selectedBuyOption={selectedBuyOption}
+                onSelectBuyOption={setSelectedBuyOption}
               />
             </SendWrapper>
           </Panel>
