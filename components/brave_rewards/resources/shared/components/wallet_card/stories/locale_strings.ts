@@ -6,6 +6,7 @@ export const localeStrings = {
   walletAccountLink: 'Go to your $1 account',
   walletAddFunds: 'Add Funds',
   walletAutoContribute: 'Auto-Contribute',
+  walletBalanceUnavailable: 'N/A',
   walletCompleteVerificationLink: 'Go to $1 to complete verification',
   walletCompleteVerificationText: 'Please complete identity verification in order to start receiving rewards.',
   walletDisconnected: 'Logged out',

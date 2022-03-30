@@ -249,6 +249,7 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         // Rewards widget
         { "rewardsAdGrantAmount", IDS_REWARDS_WIDGET_AD_GRANT_AMOUNT },
         { "rewardsAdGrantTitle", IDS_REWARDS_WIDGET_AD_GRANT_TITLE },
+        { "rewardsBalanceUnavailable", IDS_REWARDS_WALLET_BALANCE_UNAVAILABLE },
         { "rewardsBraveRewards", IDS_REWARDS_WIDGET_BRAVE_REWARDS },
         { "rewardsClaimRewards", IDS_REWARDS_WIDGET_CLAIM_REWARDS },
         { "rewardsClaimTokens", IDS_REWARDS_WIDGET_CLAIM_TOKENS },
@@ -774,6 +775,7 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "walletAccountLink", IDS_REWARDS_WALLET_ACCOUNT_LINK },
         { "walletAddFunds", IDS_REWARDS_WALLET_ADD_FUNDS },
         { "walletAutoContribute", IDS_REWARDS_WALLET_AUTO_CONTRIBUTE },
+        { "walletBalanceUnavailable", IDS_REWARDS_WALLET_BALANCE_UNAVAILABLE },
         { "walletCompleteVerificationLink", IDS_REWARDS_WALLET_COMPLETE_VERIFICATION_LINK },  // NOLINT
         { "walletCompleteVerificationText", IDS_REWARDS_WALLET_COMPLETE_VERIFICATION_TEXT },  // NOLINT
         { "walletDisconnected", IDS_REWARDS_WALLET_DISCONNECTED },

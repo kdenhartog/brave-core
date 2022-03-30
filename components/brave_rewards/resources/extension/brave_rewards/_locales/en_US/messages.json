@@ -192,6 +192,10 @@
     "message": "Auto-Contribute",
     "description": ""
   },
+  "walletBalanceUnavailable": {
+    "message": "N/A",
+    "description": "Message displayed when balance is unavailable"
+  },
   "walletCompleteVerificationLink": {
     "message": "Go to $provider$ to complete verification",
     "description": "",
