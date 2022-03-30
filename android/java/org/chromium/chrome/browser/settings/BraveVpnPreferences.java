@@ -408,7 +408,6 @@ public class BraveVpnPreferences extends BravePreferenceFragment implements Brav
                 BraveVpnUtils.mIsServerLocationChanged = false;
                 try {
                     WireguardConfigUtils.deleteConfig(getActivity());
-                    Thread.sleep(5000);
                     Log.e("BraveVPN",
                             "onGetWireguardProfileCredentials : clientId : "
                                     + BraveVpnPrefUtils.getClientId());
