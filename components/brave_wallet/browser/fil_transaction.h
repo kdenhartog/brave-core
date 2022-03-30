@@ -57,6 +57,7 @@ class FilTransaction {
 
   std::string GetMessageToSign() const;
   base::Value ToValue() const;
+  std::string GetSignedTransaction(const std::string& private_key_base64) const;
   static absl::optional<FilTransaction> FromValue(const base::Value& value);
 
  private:
