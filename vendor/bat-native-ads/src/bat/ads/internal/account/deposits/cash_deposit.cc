@@ -5,7 +5,8 @@
 
 #include "bat/ads/internal/account/deposits/cash_deposit.h"
 
-#include "bat/ads/internal/database/tables/creative_ads_database_table.h"
+#include "bat/ads/internal/account/deposits/deposit_info.h"
+#include "bat/ads/internal/database/tables/deposits_database_table.h"
 
 namespace ads {
 
@@ -15,17 +16,16 @@ CashDeposit::~CashDeposit() = default;
 
 void CashDeposit::GetValue(const std::string& creative_instance_id,
                            GetDepositCallback callback) {
-  database::table::CreativeAds database_table;
+  database::table::Deposits database_table;
   database_table.GetForCreativeInstanceId(
       creative_instance_id,
-      [callback](const bool success, const std::string& creative_instance_id,
-                 const CreativeAdInfo& creative_ad) {
+      [callback](const bool success, const DepositInfo& deposit) {
         if (!success) {
-          callback(/* success */ false, /* value */ 0.0);
+          callback(/* success */ false, {});
           return;
         }
 
-        callback(/* success */ true, creative_ad.value);
+        callback(/* success */ true, deposit.value);
       });
 }
 

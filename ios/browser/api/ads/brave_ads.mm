@@ -651,6 +651,12 @@ BATClassAdsBridge(BOOL, isDebug, setDebug, g_is_debug)
       static_cast<ads::mojom::PromotedContentAdEventType>(eventType));
 }
 
+- (void)reportSearchResultAdEvent:(NSString*)uuid
+               creativeInstanceId:(NSString*)creativeInstanceId
+                        eventType:(AdsSearchResultAdEventType)eventType {
+  // To be completed when search results ads are implemented on iOS
+}
+
 - (void)purgeOrphanedAdEvents:(AdsAdType)adType {
   if (![self isAdsServiceRunning]) {
     return;

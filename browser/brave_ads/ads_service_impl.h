@@ -175,6 +175,11 @@ class AdsServiceImpl : public AdsService,
       const std::string& creative_instance_id,
       const ads::mojom::InlineContentAdEventType event_type) override;
 
+  void OnSearchResultAdEvent(
+      const std::string& placement_id,
+      ads::mojom::SearchResultAdPtr ad_mojom,
+      const ads::mojom::SearchResultAdEventType event_type) override;
+
   void PurgeOrphanedAdEventsForType(const ads::mojom::AdType ad_type) override;
 
   void GetHistory(const double from_timestamp,
