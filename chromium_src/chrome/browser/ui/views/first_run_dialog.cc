@@ -84,7 +84,8 @@ FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kPadding, kPadding, kPadding, kPadding), kChildSpacing));
+      gfx::Insets::TLBR(kPadding, kPadding, kPadding, kPadding),
+      kChildSpacing));
 
   constexpr int kFontSize = 15;
   int size_diff = kFontSize - views::Label::GetDefaultFontList().GetFontSize();
