@@ -20,7 +20,6 @@ import usePricing from './pricing'
 import useTokenInfo from './token'
 import { useLib } from './useLib'
 
-import { MaxPriorityPanels } from '../../components/extension/edit-gas'
 import { WalletState, BraveWallet } from '../../constants/types'
 import { UpdateUnapprovedTransactionGasFieldsType, UpdateUnapprovedTransactionNonceType } from '../constants/action_types'
 
@@ -55,7 +54,6 @@ export const usePendingTransactions = () => {
   } = useTokenInfo(getBlockchainTokenInfo, visibleTokens, fullTokenList, selectedNetwork)
 
   // state
-  const [maxPriorityPanel, setMaxPriorityPanel] = React.useState<MaxPriorityPanels>(MaxPriorityPanels.setSuggested)
   const [suggestedMaxPriorityFeeChoices, setSuggestedMaxPriorityFeeChoices] = React.useState<string[]>([
     transactionGasEstimates?.slowMaxPriorityFeePerGas || '0',
     transactionGasEstimates?.avgMaxPriorityFeePerGas || '0',
@@ -200,11 +198,9 @@ export const usePendingTransactions = () => {
     foundTokenInfoByContractAddress,
     fromOrb,
     isConfirmButtonDisabled,
-    maxPriorityPanel,
     onEditAllowanceSave,
     queueNextTransaction,
     rejectAllTransactions,
-    setMaxPriorityPanel,
     suggestedMaxPriorityFeeChoices,
     toOrb,
     transactionDetails,

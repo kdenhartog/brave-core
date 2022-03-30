@@ -17,7 +17,7 @@ import { CreateSiteOrigin } from '../../shared'
 
 // Components
 import { NavButton, PanelTab, TransactionDetailBox } from '../'
-import EditGas from '../edit-gas'
+import EditGas, { MaxPriorityPanels } from '../edit-gas'
 import EditAllowance from '../edit-allowance'
 import AdvancedTransactionSettingsButton from '../advanced-transaction-settings/button'
 import AdvancedTransactionSettings from '../advanced-transaction-settings'
@@ -90,8 +90,6 @@ function ConfirmTransactionPanel ({
     foundTokenInfoByContractAddress,
     fromOrb,
     isConfirmButtonDisabled,
-    maxPriorityPanel,
-    setMaxPriorityPanel,
     suggestedMaxPriorityFeeChoices,
     toOrb,
     transactionDetails,
@@ -115,6 +113,7 @@ function ConfirmTransactionPanel ({
   const [isEditing, setIsEditing] = React.useState<boolean>(false)
   const [isEditingAllowance, setIsEditingAllowance] = React.useState<boolean>(false)
   const [showAdvancedTransactionSettings, setShowAdvancedTransactionSettings] = React.useState<boolean>(false)
+  const [maxPriorityPanel, setMaxPriorityPanel] = React.useState<MaxPriorityPanels>(MaxPriorityPanels.setSuggested)
 
   // methods
   const onSelectTab = (tab: confirmPanelTabs) => () => setSelectedTab(tab)
@@ -270,7 +269,6 @@ function ConfirmTransactionPanel ({
           onSubmit={onSelectTab('details')}
           text='Details'
         />
-
         <AdvancedTransactionSettingsButton
           onSubmit={onToggleAdvancedTransactionSettings}
         />
