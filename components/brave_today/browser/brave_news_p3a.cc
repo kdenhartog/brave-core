@@ -41,8 +41,7 @@ void RecordToHistogramBucket(const char* histogram_name,
                              uint64_t value) {
   const int* it_count = std::lower_bound(buckets, std::end(buckets), value);
   int answer = it_count - buckets;
-  base::UmaHistogramExactLinear(histogram_name, answer,
-                                std::size(buckets) + 1);
+  base::UmaHistogramExactLinear(histogram_name, answer, std::size(buckets) + 1);
 }
 
 }  // namespace
