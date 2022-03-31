@@ -49,7 +49,7 @@ function MainPanel () {
   }
 
   if (hasError) {
-    return (<ErrorPanel />)
+    return (<ErrorPanel showContactSupport={showContactSupport} />)
   }
 
   return (
