@@ -85,7 +85,7 @@ const EditVisibleAssetsModal = (props: Props) => {
   const [tokenDecimals, setTokenDecimals] = React.useState<string>('')
   const [coingeckoID, setCoingeckoID] = React.useState<string>('')
   const [iconURL, setIconURL] = React.useState<string>('')
-  const [customAssetsNetwork, setCustomAssetsNetwork] = React.useState<BraveWallet.NetworkInfo>(networkList[0])
+  const [customAssetsNetwork] = React.useState<BraveWallet.NetworkInfo>(networkList[0])
 
   // If a user removes all of their assets from the userVisibleTokenInfo list,
   // there is a check in the async/lib.ts folder that will still return the networks
@@ -400,11 +400,6 @@ const EditVisibleAssetsModal = (props: Props) => {
     }
   }, [showNetworkDropDown])
 
-  const onSelectNetwork = (network: BraveWallet.NetworkInfo) => () => {
-    setCustomAssetsNetwork(network)
-    onHideNetworkDropDown()
-  }
-
   return (
     <PopupModal
       title={showAddCustomToken
@@ -427,10 +422,8 @@ const EditVisibleAssetsModal = (props: Props) => {
               <FormWrapper>
                 <InputLabel>{getLocale('braveWalletSelectNetwork')}</InputLabel>
                 <SelectNetworkDropdown
-                  networkList={networkList}
                   selectedNetwork={customAssetsNetwork}
                   onClick={onShowNetworkDropDown}
-                  onSelectNetwork={onSelectNetwork}
                   showNetworkDropDown={showNetworkDropDown}
                 />
                 <FormRow>

@@ -1,15 +1,15 @@
 import * as React from 'react'
+import { useSelector } from 'react-redux'
+
 import SelectNetworkItem from '../select-network-item'
-import { BraveWallet } from '../../../constants/types'
+import { BraveWallet, WalletState } from '../../../constants/types'
 
-export interface Props {
-  networks: BraveWallet.NetworkInfo[]
-  selectedNetwork: BraveWallet.NetworkInfo
-  onSelectNetwork: (network: BraveWallet.NetworkInfo) => () => void
-}
-
-function SelectNetwork (props: Props) {
-  const { networks, onSelectNetwork, selectedNetwork } = props
+function SelectNetwork () {
+  // redux
+  const {
+    networkList: networks,
+    selectedNetwork
+  } = useSelector((state: { wallet: WalletState }) => state.wallet)
 
   // MULTICHAIN: Remove me once we support SOL and FIL transaction creation.
   // Will be implemented in these 2 issues
@@ -30,7 +30,6 @@ function SelectNetwork (props: Props) {
           selectedNetwork={selectedNetwork}
           key={`${network.chainId}-${network.coin}`}
           network={network}
-          onSelectNetwork={onSelectNetwork(network)}
         />
       )}
     </>

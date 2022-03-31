@@ -272,13 +272,18 @@ function ConfirmTransactionPanel (props: Props) {
    * Inserts a <wbr /> tag between the integer and decimal portions of the value for wrapping
    * This will need updating if we ever switch to using per-locale formatting
    */
-  const transactionValueText = <span>
-    {transactionValueParts.map((part, i, { length }) => [
-      part,
-      ...(i < (length - 1) ? ['.'] : []), // dont add a '.' if last part
-      <wbr />
-    ])}
-  </span>
+  const transactionValueText = (
+    <span>
+      {transactionValueParts.map((part, i, { length }) => (
+        <span key={`${i}-${part}`}>
+          {`${part}${
+            i < (length - 1) ? '.' : '' // dont add a '.' if last part
+          }`}
+          <wbr />
+        </span>
+      ))}
+    </span>
+  )
 
   if (isEditing) {
     return (

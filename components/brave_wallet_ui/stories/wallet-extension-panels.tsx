@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { Provider } from 'react-redux'
+import { createStore, combineReducers } from 'redux'
 
 // Components
 import {
@@ -53,6 +55,12 @@ import { AccountAssetOptions, NewAssetOptions } from '../options/asset-options'
 import { PanelTitles } from '../options/panel-titles'
 import './locale'
 import { transactionDummyData } from './wallet-concept'
+import { createSendCryptoReducer } from '../common/reducers/send_crypto_reducer'
+import { createWalletReducer } from '../common/reducers/wallet_reducer'
+import { createPageReducer } from '../page/reducers/page_reducer'
+import { mockPageState } from './mock-data/mock-page-state'
+import { mockWalletState } from './mock-data/mock-wallet-state'
+import { mockSendCryptoState } from './mock-data/send-crypto-state'
 export default {
   title: 'Wallet/Extension/Panels',
   parameters: {
@@ -67,6 +75,11 @@ const originInfo: OriginInfo = {
   origin: 'https://app.uniswap.org/With_A_Really_Looooooong_Site_Name/fixme',
   eTldPlusOne: 'uniswap.org'
 }
+const store = createStore(combineReducers({
+  wallet: createWalletReducer(mockWalletState),
+  page: createPageReducer(mockPageState),
+  sendCrypto: createSendCryptoReducer(mockSendCryptoState)
+}))
 
 const accounts: WalletAccountType[] = [
   {
@@ -488,12 +501,10 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
   ])
   const [filteredAppsList, setFilteredAppsList] = React.useState<AppsListType[]>(AppsList())
   const [hasPasswordError, setHasPasswordError] = React.useState<boolean>(false)
-  const [selectedNetwork, setSelectedNetwork] = React.useState<BraveWallet.NetworkInfo>(mockNetworks[0])
+  const [selectedNetwork] = React.useState<BraveWallet.NetworkInfo>(mockNetworks[0])
   const [selectedWyreAsset, setSelectedWyreAsset] = React.useState<BraveWallet.BlockchainToken>(AccountAssetOptions[0])
-  const [selectedAsset, setSelectedAsset] = React.useState<BraveWallet.BlockchainToken>(AccountAssetOptions[0])
+  const [, setSelectedAsset] = React.useState<BraveWallet.BlockchainToken>(AccountAssetOptions[0])
   const [showSelectAsset, setShowSelectAsset] = React.useState<boolean>(false)
-  const [toAddress, setToAddress] = React.useState('')
-  const [fromAmount, setFromAmount] = React.useState('')
   const [buyAmount, setBuyAmount] = React.useState('')
   const [selectedTransaction, setSelectedTransaction] = React.useState<BraveWallet.TransactionInfo | undefined>(transactionList[1][0])
 
@@ -519,11 +530,6 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
     navigateTo('transactions')
   }
 
-  const onSelectNetwork = (network: BraveWallet.NetworkInfo) => () => {
-    setSelectedNetwork(network)
-    setSelectedPanel('main')
-  }
-
   const onSelectAccount = (account: WalletAccountType) => () => {
     setSelectedAccount(account)
     setSelectedPanel('main')
@@ -540,14 +546,6 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
       setSelectedAsset(asset)
     }
     setShowSelectAsset(false)
-  }
-
-  const onInputChange = (value: string, name: string) => {
-    if (name === 'address') {
-      setToAddress(value)
-    } else {
-      setFromAmount(value)
-    }
   }
 
   const getTitle = (path: PanelTypes) => {
@@ -595,18 +593,9 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
     setWalletLocked(true)
   }
 
-  const onSelectPresetAmount = (percent: number) => {
-    const amount = Number(selectedAccount.nativeBalanceRegistry[0]) * percent
-    setFromAmount(amount.toString())
-  }
-
   const handlePasswordChanged = (value: string) => {
     setHasPasswordError(false)
     setInputValue(value)
-  }
-
-  const onSubmitSend = () => {
-    alert('Will submit Send')
   }
 
   const onOpenSettings = () => {
@@ -661,173 +650,158 @@ export const _ConnectedPanel = (args: { locked: boolean }) => {
   }
 
   return (
-    <StyledExtensionWrapper>
-      {walletLocked ? (
-        <LockPanel
-          hasPasswordError={hasPasswordError}
-          onSubmit={unlockWallet}
-          disabled={inputValue === ''}
-          onPasswordChanged={handlePasswordChanged}
-          onClickRestore={onRestore}
-        />
-      ) : (
-        <>
-          {selectedPanel === 'main' ? (
-            <ConnectedPanel
-              spotPrices={[]}
-              defaultCurrencies={mockDefaultCurrencies}
-              selectedNetwork={selectedNetwork}
-              selectedAccount={selectedAccount}
-              isConnected={true}
-              navAction={navigateTo}
-              onLockWallet={onLockWallet}
-              onOpenSettings={onOpenSettings}
-              originInfo={originInfo}
-              isSwapSupported={true}
-            />
-          ) : (
-            <>
-              {showSelectAsset &&
-                <SelectContainer>
-                  <SelectAsset
-                    assets={AccountAssetOptions}
-                    selectedNetwork={selectedNetwork}
-                    onSelectAsset={onSelectAsset}
-                    onBack={onHideSelectAsset}
-                    onAddAsset={onAddAsset}
-                  />
-                </SelectContainer>
-              }
-              {selectedPanel === 'accounts' &&
-                <SelectContainer>
-                  <SelectAccount
-                    accounts={accounts}
-                    onBack={onBack}
-                    onSelectAccount={onSelectAccount}
-                    onAddAccount={onAddAccount}
-                    hasAddButton={true}
-                    selectedAccount={selectedAccount}
-                  />
-                </SelectContainer>
-              }
-              {selectedPanel === 'networks' &&
-                <SelectContainer>
-                  <SelectNetwork
-                    selectedNetwork={selectedNetwork}
-                    networks={mockNetworks}
-                    onBack={onBack}
-                    onSelectNetwork={onSelectNetwork}
-                    hasAddButton={true}
-                    onAddNetwork={onAddNetwork}
-                  />
-                </SelectContainer>
-              }
-              {selectedPanel === 'transactionDetails' && selectedTransaction &&
-                <SelectContainer>
-                  <TransactionDetailPanel
-                    transaction={selectedTransaction}
-                    onBack={onBackToTransactions}
-                    onCancelTransaction={onClickCancelTransaction}
-                    onRetryTransaction={onClickRetryTransaction}
-                    onSpeedupTransaction={onClickSpeedupTransaction}
-                    accounts={accounts}
-                    defaultCurrencies={mockDefaultCurrencies}
-                    selectedNetwork={mockNetworks[0]}
-                    visibleTokens={NewAssetOptions}
-                    transactionSpotPrices={[]}
-                  />
-                </SelectContainer>
-              }
-              {!showSelectAsset && selectedPanel !== 'networks' && selectedPanel !== 'accounts' && selectedPanel !== 'transactionDetails' &&
-                < Panel
-                  navAction={navigateTo}
-                  title={panelTitle}
-                  useSearch={selectedPanel === 'apps'}
-                  searchAction={selectedPanel === 'apps' ? filterList : undefined}
-                >
-                  <ScrollContainer>
-                    {selectedPanel === 'apps' &&
-                      <AppList
-                        list={filteredAppsList}
-                        favApps={favoriteApps}
-                        addToFav={addToFavorites}
-                        removeFromFav={removeFromFavorites}
-                        action={browseMore}
-                      />
-                    }
-                    {selectedPanel === 'send' &&
-                      <Send
-                        onChangeSendView={onChangeSendView}
-                        onInputChange={onInputChange}
-                        onSelectPresetAmount={onSelectPresetAmount}
-                        onSubmit={onSubmitSend}
-                        addressError=''
-                        addressWarning=''
-                        selectedAsset={selectedAsset}
-                        selectedAssetAmount={fromAmount}
-                        selectedAssetBalance={(selectedAccount.nativeBalanceRegistry)[selectedAsset.chainId]}
-                        toAddressOrUrl={toAddress}
-                        toAddress={toAddress}
-                        amountValidationError={undefined}
-                        selectedNetwork={selectedNetwork}
-                      />
-                    }
-                    {selectedPanel === 'buy' &&
-                      <Buy
-                        defaultCurrencies={mockDefaultCurrencies}
-                        onChangeBuyView={onChangeSendView}
-                        onInputChange={onSetBuyAmount}
-                        onSubmit={onSubmitBuy}
-                        selectedAsset={selectedWyreAsset}
-                        buyAmount={buyAmount}
-                        selectedNetwork={selectedNetwork}
-                        networkList={[]}
-                      />
-                    }
-                    {selectedPanel === 'sitePermissions' &&
-                      <SitePermissions
-                        selectedAccount={selectedAccount}
-                        originInfo={originInfo}
-                        onDisconnect={onDisconnectFromOrigin}
-                        connectedAccounts={connectedAccounts}
-                        accounts={accounts}
-                        onSwitchAccount={onSelectAccount}
-                        onConnect={onConnectToOrigin}
-                        onAddAccount={onAddAccount}
-                      />
-                    }
-                    {selectedPanel === 'transactions' &&
-                      <TransactionsPanel
-                        accounts={transactionDummyAccounts}
-                        defaultCurrencies={mockDefaultCurrencies}
-                        onSelectTransaction={onSelectTransaction}
-                        selectedNetwork={mockNetworks[0]}
-                        selectedAccount={transactionDummyAccounts[0]}
-                        visibleTokens={NewAssetOptions}
-                        transactionSpotPrices={[]}
-                        transactions={transactionList}
+    <Provider store={store}>
+      <StyledExtensionWrapper>
+        {walletLocked ? (
+          <LockPanel
+            hasPasswordError={hasPasswordError}
+            onSubmit={unlockWallet}
+            disabled={inputValue === ''}
+            onPasswordChanged={handlePasswordChanged}
+            onClickRestore={onRestore}
+          />
+        ) : (
+          <>
+            {selectedPanel === 'main' ? (
+              <ConnectedPanel
+                spotPrices={[]}
+                defaultCurrencies={mockDefaultCurrencies}
+                selectedNetwork={selectedNetwork}
+                selectedAccount={selectedAccount}
+                isConnected={true}
+                navAction={navigateTo}
+                onLockWallet={onLockWallet}
+                onOpenSettings={onOpenSettings}
+                originInfo={originInfo}
+                isSwapSupported={true}
+              />
+            ) : (
+              <>
+                {showSelectAsset &&
+                  <SelectContainer>
+                    <SelectAsset
+                      assets={AccountAssetOptions}
+                      onSelectAsset={onSelectAsset}
+                      onBack={onHideSelectAsset}
+                    />
+                  </SelectContainer>
+                }
+                {selectedPanel === 'accounts' &&
+                  <SelectContainer>
+                    <SelectAccount
+                      accounts={accounts}
+                      onBack={onBack}
+                      onSelectAccount={onSelectAccount}
+                      onAddAccount={onAddAccount}
+                      hasAddButton={true}
+                      selectedAccount={selectedAccount}
+                    />
+                  </SelectContainer>
+                }
+                {selectedPanel === 'networks' &&
+                  <SelectContainer>
+                    <SelectNetwork
+                      onBack={onBack}
+                      hasAddButton={true}
+                      onAddNetwork={onAddNetwork}
+                    />
+                  </SelectContainer>
+                }
+                {selectedPanel === 'transactionDetails' && selectedTransaction &&
+                  <SelectContainer>
+                    <TransactionDetailPanel
+                      transaction={selectedTransaction}
+                      onBack={onBackToTransactions}
+                      onCancelTransaction={onClickCancelTransaction}
+                      onRetryTransaction={onClickRetryTransaction}
+                      onSpeedupTransaction={onClickSpeedupTransaction}
+                      accounts={accounts}
+                      defaultCurrencies={mockDefaultCurrencies}
+                      selectedNetwork={mockNetworks[0]}
+                      visibleTokens={NewAssetOptions}
+                      transactionSpotPrices={[]}
+                    />
+                  </SelectContainer>
+                }
+                {!showSelectAsset && selectedPanel !== 'networks' && selectedPanel !== 'accounts' && selectedPanel !== 'transactionDetails' &&
+                  < Panel
+                    navAction={navigateTo}
+                    title={panelTitle}
+                    useSearch={selectedPanel === 'apps'}
+                    searchAction={selectedPanel === 'apps' ? filterList : undefined}
+                  >
+                    <ScrollContainer>
+                      {selectedPanel === 'apps' &&
+                        <AppList
+                          list={filteredAppsList}
+                          favApps={favoriteApps}
+                          addToFav={addToFavorites}
+                          removeFromFav={removeFromFavorites}
+                          action={browseMore}
+                        />
+                      }
+                      {selectedPanel === 'send' &&
+                        <Send
+                          onChangeSendView={onChangeSendView}
+                        />
+                      }
+                      {selectedPanel === 'buy' &&
+                        <Buy
+                          defaultCurrencies={mockDefaultCurrencies}
+                          onChangeBuyView={onChangeSendView}
+                          onInputChange={onSetBuyAmount}
+                          onSubmit={onSubmitBuy}
+                          selectedAsset={selectedWyreAsset}
+                          buyAmount={buyAmount}
+                          selectedNetwork={selectedNetwork}
+                          networkList={[]}
+                        />
+                      }
+                      {selectedPanel === 'sitePermissions' &&
+                        <SitePermissions
+                          selectedAccount={selectedAccount}
+                          originInfo={originInfo}
+                          onDisconnect={onDisconnectFromOrigin}
+                          connectedAccounts={connectedAccounts}
+                          accounts={accounts}
+                          onSwitchAccount={onSelectAccount}
+                          onConnect={onConnectToOrigin}
+                          onAddAccount={onAddAccount}
+                        />
+                      }
+                      {selectedPanel === 'transactions' &&
+                        <TransactionsPanel
+                          accounts={transactionDummyAccounts}
+                          defaultCurrencies={mockDefaultCurrencies}
+                          onSelectTransaction={onSelectTransaction}
+                          selectedNetwork={mockNetworks[0]}
+                          selectedAccount={transactionDummyAccounts[0]}
+                          visibleTokens={NewAssetOptions}
+                          transactionSpotPrices={[]}
+                          transactions={transactionList}
 
-                      />
-                    }
-                    {selectedPanel === 'assets' &&
-                      <AssetsPanel
-                        defaultCurrencies={mockDefaultCurrencies}
-                        selectedAccount={selectedAccount}
-                        spotPrices={[]}
-                        userAssetList={AccountAssetOptions}
-                        onAddAsset={onAddAsset}
-                        networkList={[selectedNetwork]}
-                      />
-                    }
-                  </ScrollContainer>
-                </Panel>
-              }
-            </>
-          )}
-        </>
-      )
-      }
-    </StyledExtensionWrapper >
+                        />
+                      }
+                      {selectedPanel === 'assets' &&
+                        <AssetsPanel
+                          defaultCurrencies={mockDefaultCurrencies}
+                          selectedAccount={selectedAccount}
+                          spotPrices={[]}
+                          userAssetList={AccountAssetOptions}
+                          onAddAsset={onAddAsset}
+                          networkList={[selectedNetwork]}
+                        />
+                      }
+                    </ScrollContainer>
+                  </Panel>
+                }
+              </>
+            )}
+          </>
+        )
+        }
+      </StyledExtensionWrapper>
+    </Provider>
   )
 }
 
@@ -919,27 +893,29 @@ export const _TransactionDetail = () => {
   const tx = transactionList[transactionDummyAccounts[0].address][0]
   return (
     <StyledExtensionWrapper>
-      <Panel
-        navAction={mockedFunction}
-        title={'Recent Transactions'}
-        useSearch={false}
-        searchAction={undefined}
-      >
-        <ScrollContainer>
-          <TransactionDetailPanel
-            onBack={mockedFunction}
-            onCancelTransaction={mockedFunction}
-            onRetryTransaction={mockedFunction}
-            onSpeedupTransaction={mockedFunction}
-            accounts={transactionDummyAccounts}
-            defaultCurrencies={mockDefaultCurrencies}
-            selectedNetwork={mockNetworks[0]}
-            visibleTokens={NewAssetOptions}
-            transactionSpotPrices={[]}
-            transaction={tx}
-          />
-        </ScrollContainer>
-      </Panel>
+      <Provider store={store}>
+        <Panel
+          navAction={mockedFunction}
+          title={'Recent Transactions'}
+          useSearch={false}
+          searchAction={undefined}
+        >
+          <ScrollContainer>
+            <TransactionDetailPanel
+              onBack={mockedFunction}
+              onCancelTransaction={mockedFunction}
+              onRetryTransaction={mockedFunction}
+              onSpeedupTransaction={mockedFunction}
+              accounts={transactionDummyAccounts}
+              defaultCurrencies={mockDefaultCurrencies}
+              selectedNetwork={mockNetworks[0]}
+              visibleTokens={NewAssetOptions}
+              transactionSpotPrices={[]}
+              transaction={tx}
+            />
+          </ScrollContainer>
+        </Panel>
+      </Provider>
     </StyledExtensionWrapper>
   )
 }
