@@ -58,11 +58,7 @@ RegisterPolymerTemplateModifications({
       }
     }
 
-    const privacySandboxLinkRow = templateContent.getElementById('privacySandboxLinkRow')
-    if (!privacySandboxLinkRow) {
-      console.error('[Brave Settings Overrides] Could not find privacySandboxLinkRow id on privacy page.')
-    } else {
-      privacySandboxLinkRow.setAttribute('hidden', 'true')
-    }
+    // Disables privacySandboxLinkRow
+    loadTimeData.overrideValues({ isPrivacySandboxRestricted: true })
   },
 })
