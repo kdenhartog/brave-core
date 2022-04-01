@@ -215,4 +215,128 @@ TEST(BlockchainRegistryUnitTest, GetTokenBySymbol) {
   run_loop4.Run();
 }
 
+TEST(BlockchainRegistryUnitTest, GetBuyTokens) {
+  base::test::TaskEnvironment task_environment;
+  auto* registry = BlockchainRegistry::GetInstance();
+
+  // Get Wyre buy tokens
+  base::RunLoop run_loop1;
+  registry->GetBuyTokens(
+      mojom::OnRampProvider::Wyre, mojom::kMainnetChainId,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::BlockchainTokenPtr> token_list) {
+            EXPECT_NE(token_list.size(), 0UL);
+            EXPECT_EQ(token_list[0]->name, "Basic Attention Token");
+            EXPECT_EQ(token_list[1]->name, "Ethereum");
+
+            run_loop1.Quit();
+          }));
+  run_loop1.Run();
+
+  base::RunLoop run_loop2;
+  registry->GetBuyTokens(
+      mojom::OnRampProvider::Wyre, mojom::kPolygonMainnetChainId,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::BlockchainTokenPtr> token_list) {
+            EXPECT_EQ(token_list.size(), 0UL);
+            run_loop2.Quit();
+          }));
+  run_loop2.Run();
+
+  // Get Ramp buy tokens
+  base::RunLoop run_loop3;
+  registry->GetBuyTokens(
+      mojom::OnRampProvider::Ramp, mojom::kMainnetChainId,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::BlockchainTokenPtr> token_list) {
+            EXPECT_NE(token_list.size(), 0UL);
+            EXPECT_EQ(token_list[0]->name, "Ethereum");
+            run_loop3.Quit();
+          }));
+  run_loop3.Run();
+
+  base::RunLoop run_loop4;
+  registry->GetBuyTokens(
+      mojom::OnRampProvider::Ramp, mojom::kPolygonMainnetChainId,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::BlockchainTokenPtr> token_list) {
+            EXPECT_NE(token_list.size(), 0UL);
+            EXPECT_EQ(token_list[0]->name, "Polygon");
+            run_loop4.Quit();
+          }));
+  run_loop4.Run();
+}
+
+TEST(BlockchainRegistryUnitTest, GetBuyUrlWyre) {
+  base::test::TaskEnvironment task_environment;
+  auto* registry = BlockchainRegistry::GetInstance();
+
+  base::RunLoop run_loop;
+  registry->GetBuyUrl(
+      mojom::OnRampProvider::Wyre, mojom::kMainnetChainId, "0xdeadbeef", "USDC",
+      "99.99",
+      base::BindLambdaForTesting([&](const std::string& url,
+                                     const absl::optional<std::string>& error) {
+        EXPECT_EQ(url,
+                  "https://pay.sendwyre.com/"
+                  "?dest=ethereum:0xdeadbeef&destCurrency=USDC&amount=99.99&"
+                  "accountId=AC_MGNVBGHPA9T&paymentMethod=debit-card");
+        EXPECT_FALSE(error);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST(BlockchainRegistryUnitTest, GetBuyUrlRamp) {
+  base::test::TaskEnvironment task_environment;
+  auto* registry = BlockchainRegistry::GetInstance();
+
+  base::RunLoop run_loop;
+  registry->GetBuyUrl(
+      mojom::OnRampProvider::Ramp, mojom::kMainnetChainId, "0xdeadbeef", "USDC",
+      "55000000",  // 55 USDC
+      base::BindLambdaForTesting([&](const std::string& url,
+                                     const absl::optional<std::string>& error) {
+        EXPECT_EQ(url,
+                  "https://buy.ramp.network/"
+                  "?userAddress=0xdeadbeef&swapAsset=USDC&swapAmount=55000000");
+        EXPECT_FALSE(error);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST(BlockchainRegistryUnitTest, GetBuyUrlUnsupportedNetwork) {
+  base::test::TaskEnvironment task_environment;
+  auto* registry = BlockchainRegistry::GetInstance();
+
+  base::RunLoop run_loop_1;
+  registry->GetBuyUrl(
+      mojom::OnRampProvider::Ramp, mojom::kPolygonMainnetChainId, "0xdeadbeef",
+      "USDC", "12345",
+      base::BindLambdaForTesting([&](const std::string& url,
+                                     const absl::optional<std::string>& error) {
+        EXPECT_EQ(url, "");
+        EXPECT_EQ(error, "UNSUPPORTED_NETWORK");
+
+        run_loop_1.Quit();
+      }));
+  run_loop_1.Run();
+
+  base::RunLoop run_loop_2;
+  registry->GetBuyUrl(
+      mojom::OnRampProvider::Wyre, mojom::kPolygonMainnetChainId, "0xdeadbeef",
+      "USDC", "12345",
+      base::BindLambdaForTesting([&](const std::string& url,
+                                     const absl::optional<std::string>& error) {
+        EXPECT_EQ(url, "");
+        EXPECT_EQ(error, "UNSUPPORTED_NETWORK");
+
+        run_loop_2.Quit();
+      }));
+  run_loop_2.Run();
+}
+
 }  // namespace brave_wallet
