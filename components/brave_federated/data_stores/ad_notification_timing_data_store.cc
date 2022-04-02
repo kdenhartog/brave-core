@@ -81,6 +81,8 @@ bool AdNotificationTimingDataStore::AddLog(
     const AdNotificationTimingTaskLog& log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(Moritz Haller): Use generic log format
+
   sql::Statement s(db_.GetUniqueStatement(
       base::StringPrintf(
           "INSERT INTO %s (time, locale, number_of_tabs, label, creation_date) "

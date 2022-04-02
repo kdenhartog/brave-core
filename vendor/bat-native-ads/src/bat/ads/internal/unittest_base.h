@@ -54,6 +54,8 @@ class UnitTestBase : public testing::Test {
 
   AdsImpl* GetAds() const;
 
+  CovariateLogs* GetCovariateLogs() const;
+
   // testing::Test implementation
   void SetUp() override;
   void TearDown() override;

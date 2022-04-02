@@ -107,6 +107,10 @@ AdsImpl* UnitTestBase::GetAds() const {
   return ads_.get();
 }
 
+CovariateLogs* UnitTestBase::GetCovariateLogs() const {
+  return covariate_logs_.get();
+}
+
 void UnitTestBase::FastForwardClockBy(const base::TimeDelta time_delta) {
   task_environment_.FastForwardBy(time_delta);
 }

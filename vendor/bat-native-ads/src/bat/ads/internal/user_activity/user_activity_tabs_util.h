@@ -7,10 +7,15 @@
 #define BRAVE_VENDOR_BAT_NATIVE_ADS_SRC_BAT_ADS_INTERNAL_USER_ACTIVITY_USER_ACTIVITY_TABS_UTIL_H_
 
 #include "bat/ads/internal/user_activity/user_activity_event_info_aliases.h"
+#include "bat/ads/internal/user_activity/user_activity_event_types.h"
 
 namespace ads {
 
+// TODO(Moritz Haller): Rename file, as not only tabs util anymore
+
 int GetNumberOfTabsOpened(const UserActivityEventList& events);
+int GetNumberOfEvents(const UserActivityEventList& events, UserActivityEventType event_type);
+int GetTimeSinceLastEvent(const UserActivityEventList& events, UserActivityEventType event_type);
 
 }  // namespace ads
 
