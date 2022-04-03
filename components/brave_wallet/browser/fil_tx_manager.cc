@@ -37,9 +37,13 @@ FilTxManager::FilTxManager(TxService* tx_service,
                 keyring_service,
                 prefs),
       nonce_tracker_(std::make_unique<FilNonceTracker>(GetFilTxStateManager(),
-                                                       json_rpc_service)) {}
+                                                       json_rpc_service)) {
+  GetFilBlockTracker()->AddObserver(this);
+}
 
-FilTxManager::~FilTxManager() = default;
+FilTxManager::~FilTxManager() {
+  GetFilBlockTracker()->RemoveObserver(this);
+}
 
 void FilTxManager::AddUnapprovedTransaction(
     mojom::FilTxDataPtr tx_data,
@@ -273,6 +277,50 @@ FilTxStateManager* FilTxManager::GetFilTxStateManager() {
   return static_cast<FilTxStateManager*>(tx_state_manager_.get());
 }
 
-void FilTxManager::UpdatePendingTransactions() {}
+void FilTxManager::UpdatePendingTransactions() {
+  auto pending_transactions = tx_state_manager_->GetTransactionsByStatus(
+      mojom::TransactionStatus::Submitted, absl::nullopt);
+  for (const auto& pending_transaction : pending_transactions) {
+    auto cid = pending_transaction->tx_hash();
+    auto seconds =
+        (base::Time::Now() - pending_transaction->submitted_time()).InSeconds();
+    // Each epoch is 30 seconds. Ideally each epoch should have a new tipset but
+    // some are empty as well. We note the time and divide it by
+    // 30 to get the number of tipsets to look back.
+    uint64_t tipset = uint64_t(seconds / 30);
+    json_rpc_service_->GetFilStateSearchMsgLimited(
+        cid, tipset,
+        base::BindOnce(&FilTxManager::OnGetTransactionStatus,
+                       weak_factory_.GetWeakPtr(), pending_transaction->id()));
+  }
+  known_no_pending_tx_ = pending_transactions.empty();
+  CheckIfBlockTrackerShouldRun();
+}
+
+void FilTxManager::OnGetTransactionStatus(const std::string& tx_meta_id,
+                                          int exit_code,
+                                          mojom::FilecoinProviderError error,
+                                          const std::string& error_message) {
+  if (error != mojom::FilecoinProviderError::kSuccess)
+    return;
+  std::unique_ptr<FilTxMeta> meta =
+      GetFilTxStateManager()->GetFilTx(tx_meta_id);
+  if (!meta)
+    return;
+  mojom::TransactionStatus status = (exit_code == 0)
+                                        ? mojom::TransactionStatus::Confirmed
+                                        : mojom::TransactionStatus::Error;
+  meta->set_status(status);
+  meta->set_confirmed_time(base::Time::Now());
+  tx_state_manager_->AddOrUpdateTx(*meta);
+}
+
+void FilTxManager::OnLatestBlockhashUpdated() {
+  UpdatePendingTransactions();
+}
+
+FilBlockTracker* FilTxManager::GetFilBlockTracker() {
+  return static_cast<FilBlockTracker*>(block_tracker_.get());
+}
 
 }  // namespace brave_wallet
